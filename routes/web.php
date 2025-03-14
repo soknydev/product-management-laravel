@@ -25,9 +25,9 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware('auth.user')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/hello', function () {
+        return view('hello');
+    })->name('hello');
 });
 
 route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');

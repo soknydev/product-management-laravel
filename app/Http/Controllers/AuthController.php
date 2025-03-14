@@ -25,7 +25,7 @@ class AuthController extends Controller
 
         if ($user && Hash::check($request->password, $user->password)) {
             Auth::login($user);
-            return redirect()->route('dashboard');
+            return redirect()->route('hello');
         }
 
         return back()->withErrors(['name' => 'Invalid credentials']);
