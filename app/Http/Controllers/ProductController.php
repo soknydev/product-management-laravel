@@ -48,17 +48,33 @@ class ProductController extends Controller
         return response()->json($product);
     }
 
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'name' => 'string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'numeric|min:0',
-            'stock' => 'integer|min:0',
-        ]);
+        try {
+            // Find the product by ID
+            $product = Product::findOrFail($id);
 
-        $product->update($validated);
-        return response()->json($product);
+            // Validate input
+            $validated = $request->validate([
+                'name' => 'string|max:255',
+                'description' => 'nullable|string',
+                'price' => 'numeric|min:0',
+                'stock' => 'integer|min:0',
+            ]);
+
+            // Update the product
+            $product->update($validated);
+
+            return response()->json([
+                'message' => 'Product updated successfully',
+                'product' => $product
+            ], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Product not found'], 404);
+        } catch (\Exception $e) {
+            Log::error('Error updating product: ' . $e->getMessage());
+            return response()->json(['error' => 'Internal Server Error'], 500);
+        }
     }
 
     public function destroy(Product $product)
