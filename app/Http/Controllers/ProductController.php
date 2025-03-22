@@ -43,9 +43,21 @@ class ProductController extends Controller
         }
     }
 
-    public function show(Product $product)
+    public function show($id)
     {
-        return response()->json($product);
+        try {
+            // Find the product by ID
+            $product = Product::findOrFail($id);
+
+            return response()->json([
+                'message' => 'Product retrieved successfully',
+                'product' => $product
+            ], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Product not found'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Internal Server Error'], 500);
+        }
     }
 
     public function update(Request $request, $id)
@@ -77,9 +89,24 @@ class ProductController extends Controller
         }
     }
 
-    public function destroy(Product $product)
+    public function destroy($id)
     {
-        $product->delete();
-        return response()->json(['message' => 'Product deleted successfully']);
+        try {
+            // Find product by ID
+            $product = Product::findOrFail($id);
+
+            // Delete product
+            $product->delete();
+
+            return response()->json([
+                'message' => 'Product deleted successfully'
+            ], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Product not found'], 404);
+        } catch (\Exception $e) {
+            Log::error('Error deleting product: ' . $e->getMessage());
+            return response()->json(['error' => 'Internal Server Error'], 500);
+        }
     }
+
 }
